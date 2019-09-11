@@ -14,7 +14,7 @@ required = parser.add_argument_group('required arguments')
 
 ## user inputs required
 required.add_argument('-p', '--inFile', help='path to .fasta file.', dest='file_inFile')
-required.add_argument('-s', '--seq', help='sequence to search for and remove', dest='sequence')
+required.add_argument('-s', '--seq', help='sequence to search for matching', dest='sequence')
 required.add_argument('-o', '--outPath', help='path to output directory.', dest='path_outPath')
 required.add_argument('-f', '--filter', help='filter "in" or "out"', dest='filter')
 required.add_argument('-m', '--misMatch', help='number of allowed mismatches', dest='mismatch')
