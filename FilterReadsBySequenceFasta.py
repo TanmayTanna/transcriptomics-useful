@@ -17,7 +17,8 @@ required.add_argument('-p', '--inFile', help='path to .fasta file.', dest='file_
 required.add_argument('-s', '--seq', help='sequence to search for and remove', dest='sequence')
 required.add_argument('-o', '--outPath', help='path to output directory.', dest='path_outPath')
 required.add_argument('-f', '--filter', help='filter "in" or "out"', dest='filter')
-
+required.add_argument('-m', '--misMatch', help='number of allowed mismatches', dest='mismatch')
+required.add_argument('-n', '--readNumber', help='maximum number of reads in destination file', dest='readNumber')
 args = parser.parse_args()
 
 # assign arguments to variables
@@ -26,12 +27,12 @@ inFile = str(args.file_inFile)
 outPath = str(args.path_outPath)+'/'
 sequence=str(args.sequence)
 outName = inFile.split("/")[-1]
+readNumber = args.readNumber
+mismatch = args.mismatch
 filter = str(args.filter)
 if outName.endswith('.fasta'):
     outName = outName[:-6]
 
-
- 
 
 if ('.fasta' in inFile or '.fa' in inFile):
     
@@ -51,7 +52,7 @@ if ('.fasta' in inFile or '.fa' in inFile):
 
 
     for L in F: # loop through reads in file
-        if filteredReads>4999:
+        if filteredReads>readNumber:
             break
         if '>' in L: # defline, skip for processing but save read name
             readName = L.strip()
@@ -68,14 +69,16 @@ if ('.fasta' in inFile or '.fa' in inFile):
             if filter=="in":
                 filteredReads+=1
                 G.write(readName+'\n'+L+'\n')
+                
+        if mismatch>0:
+            d = fuzzysearch.find_near_matches(sequence1, L, max_l_dist = mismatch)
 
-        
-
-#        d = fuzzysearch.find_near_matches(sequence1, L, max_l_dist = 4)
-
- #       if d:
-  #          ReadsWithsequence1+=1
-   #         continue
+        if d:
+            ReadsWithsequence1+=1
+            continue
+            if filter=="in":
+                filteredReads+=1
+                G.write(readName+'\n'+L+'\n')
         else:
             ReadsWithoutSequence+=1
             if filter=="out":
