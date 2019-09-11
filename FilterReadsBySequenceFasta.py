@@ -36,7 +36,7 @@ if outName.endswith('.fasta'):
 
 if ('.fasta' in inFile or '.fa' in inFile):
     
-    # open inFile for reading/writing and report file being processed
+    # open inFile for reading/writing 
     F = open(inFile,mode='rU')
     G = open(outPath+outName+'.filtered.fasta',mode='w')
 
