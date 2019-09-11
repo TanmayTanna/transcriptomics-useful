@@ -1,7 +1,7 @@
 # April 15, 2019
 # Tanmay Tanna
 
-# Ensure that the input fasta file has no newlines within the sequences. Use the following command if there are any:
+# Ensure that the input fasta file has no newlines within the features. Use the following command if there are any:
 # awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < file.fa > out.fa 
 
 from __future__ import division
@@ -22,13 +22,13 @@ required.add_argument('-o', '--outPath', help='path to output directory.', dest=
 
 
 ## user inputs optional
-optional.add_argument('-n', '--num', help='maximum total number of sequences to be sampled', dest='seq_num', default=1000000)
-optional.add_argument('-n1', '--minseq', help='minimum number of sequences to be sampled from each sequence in reference', dest='minseq', default=1)
-optional.add_argument('-n2', '--maxseq', help='maximum number of sequences to be sampled from each sequence in reference', dest='maxseq', default=100)
+optional.add_argument('-n', '--num', help='maximum total number of sequences to be sampled', dest='seq_num', default=10000)
+optional.add_argument('-n1', '--minseq', help='minimum number of sequences to be sampled from each feature in reference', dest='minseq', default=0)
+optional.add_argument('-n2', '--maxseq', help='maximum number of sequences to be sampled from each feature in reference', dest='maxseq', default=100)
 optional.add_argument('-gc1', '--minGC', help='minimum gc content in sequences', dest='mingc', default=25)
 optional.add_argument('-gc2', '--maxGC', help='maximum gc content in sequences', dest='maxgc', default=45)
-optional.add_argument('-ngc', '--nonGC', help='percentage probability of sequence to be accepeted if it is outside of gc range. If this is on, +-10 percent GC content of the limits of the GC range will be selected for twice this probability, so that the distribution is gaussian-like', dest='nonGC', default=10)
-optional.add_argument('-z', '--numZero', help='percentage probability of sequences in reference to not have any sampling', dest='noseq', default=0)
+optional.add_argument('-ngc', '--nonGC', help='percentage probability of sequence to be accepeted if it is outside of gc range. If this is on, +-10 percent GC content of the limits of the GC range will be selected for twice this probability, so that the distribution is gaussian-like', dest='nonGC', default=0)
+optional.add_argument('-z', '--numZero', help='percentage probability of features in reference to not have any sampling', dest='noseq', default=0)
 optional.add_argument('-q', '--outName', help='name of output file', dest='outName', default='NULL')
 
 args = parser.parse_args()
@@ -51,8 +51,10 @@ if 'NULL' in outName:
     outName = inFile.split("/")[-1]
     if outName.endswith('.fasta'):
         outName = outName[:-6]
-n_sect=10 #change if the sequence is to be split into sub-sequences and a bias for sub-sequences from specific positions is to be introduced
-skew=5 # can be 5 for 5' or 0 for no skew
+
+## De-comment if a skew is to be introduced in sequence sampling
+# n_sect=10 #change if the sequence is to be split into sub-sequences and a bias for sub-sequences from specific positions is to be introduced
+# skew=5 # can be 5 for 5' or 0 for no skew
 
 if ('.fasta' in inFile or '.fa' in inFile):
     
