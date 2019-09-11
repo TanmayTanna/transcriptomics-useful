@@ -27,8 +27,8 @@ inFile = str(args.file_inFile)
 outPath = str(args.path_outPath)+'/'
 sequence=str(args.sequence)
 outName = inFile.split("/")[-1]
-readNumber = args.readNumber
-mismatch = args.mismatch
+readNumber = int(args.readNumber)
+mismatch = int(args.mismatch)
 filter = str(args.filter)
 if outName.endswith('.fasta'):
     outName = outName[:-6]
