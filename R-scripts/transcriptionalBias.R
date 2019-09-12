@@ -3,35 +3,39 @@ library(readr)
 library(readxl)
 library(reshape2)
 
-RNAseqCountsPath = "NC_012947.1_RNAseq.txt"
-RNAseqCounts = as.data.frame(read.table(RNAseqCountsPath, header = TRUE))
-rownames(RNAseqCounts)=RNAseqCounts[,1]
-genelengths<-RNAseqCounts$Length
-RNAseqCounts=RNAseqCounts[,-c(1:6)]
-for(i in 1:dim(RNAseqCounts)[2]){
-  RNAseqCounts[,i]<-RNAseqCounts[,i]/genelengths
-  RNAseqCounts[,i]<-RNAseqCounts[,i]*1000000/sum(RNAseqCounts[,i])
+transcriptionalBias <- function(
+ReferenceCountsPath, # path for reference counts file
+TestCountsDirectory, # path for directory containing test counts file(s)
+pattern="Counts.txt", #pattern used as suffix for test counts files
+OutputPath="."
+
+)
+{
+RefSeqCounts <- as.data.frame(read.table(RefSeqCountsPath, header = TRUE))
+rownames(RefSeqCounts)<-RefSeqCounts[,1]
+genelengths<-RefSeqCounts$Length
+RefSeqCounts<-RefSeqCounts[,-c(1:6)]
+for(i in 1:dim(RefSeqCounts)[2]){
+  RefSeqCounts[,i]<-RefSeqCounts[,i]/genelengths
+  RefSeqCounts[,i]<-RefSeqCounts[,i]*1000000/sum(RefSeqCounts[,i])
 }
 
-o=order(rowMeans(RNAseqCounts), decreasing = TRUE)
-RNAseqCounts=RNAseqCounts[o,]
-plasmid_countspaths=list.files(path = ".", pattern = "*Counts.txt")
+o=order(rowMeans(RefSeqCounts), decreasing = TRUE)
+RefSeqCounts=RefSeqCounts[o,]
+test_countspaths=list.files(path = TestCountsDirectory, pattern = pattern)
 Counts<-list()
-for(i in 1:length(plasmid_countspaths)){
-  plasmid_name = strsplit(plasmid_countspaths[i],".txt")[[1]][1]
-  Counts[[plasmid_name]] = as.data.frame(read.table(plasmid_countspaths[i], header = TRUE))
-  rownames(Counts[[plasmid_name]])=Counts[[plasmid_name]][,1]
-  Counts[[plasmid_name]]=Counts[[plasmid_name]][,-c(1:6)]
+for(i in 1:length(test_countspaths)){
+  test_name_temp = strsplit(test_countspaths[i],".txt")[[1]][1]
+  test_name = strsplit(test_name_temp,"/")[[1]][1]
+  Counts[[test_name]] = as.data.frame(read.table(test_countspaths[i], header = TRUE))
+  rownames(Counts[[test_name]])=Counts[[test_name]][,1]
+  Counts[[test_name]]=Counts[[test_name]][,-c(1:6)]
 }
 
 for(i in 1:length(Counts)){
-  Counts[[i]]<-Counts[[i]][match(rownames(RNAseqCounts), rownames(Counts[[i]])),]
+  Counts[[i]]<-Counts[[i]][match(rownames(RefSeqCounts), rownames(Counts[[i]])),]
   for(j in 1:length(colnames(Counts[[i]]))){
-    if(grepl("_MC_",colnames(Counts[[i]])[j])){
-    colnames(Counts[[i]])[j]= strsplit(colnames(Counts[[i]])[j], "2018")[[1]][length(strsplit(colnames(Counts[[i]])[j], "2018")[[1]])]
-    colnames(Counts[[i]])[j]= paste0("Sample_2018",strsplit(colnames(Counts[[i]])[j], "_BL21_")[[1]][1])
-    }
-    print(colnames(Counts[[i]][j]))
+    #print(colnames(Counts[[i]][j]))
     k=sum(Counts[[i]][,j])
     Counts[[i]][,j]=Counts[[i]][,j]/k
     Counts[[i]][,j]=cumsum(Counts[[i]][,j])
@@ -43,12 +47,12 @@ for(i in 1:length(Counts)){
   len2=length(rownames(Counts[[i]]))
   write.csv(Counts[[i]], file = paste0("TranscriptionalBiasCounts_",as.character(names(Counts)[i]),".csv"))
   
-  ## Uncomment this section if you want to plot only mean of replicates ##  
-  # ggplot(Counts[[i]], aes(x=1:len2, y=Mean_Cumulative_transcript_Counts))+
-  #   geom_smooth(col="DARKBLUE")+xlab("Genes sorted by RNA-seq counts")+ylab("Cumulative transcript count fraction")+geom_line(aes(x=1:len2, y=seq(1/len2,1,1/len2)), col="RED")+
-  #   theme_classic()
-  # ggsave(paste0("TranscriptionalBiasPlot_",as.character(names(Counts)[i]), ".svg"), height = 8.5, width = 10)
-  
+  ## Uncomment this section if you want to plot mean of replicates (columns) in the experiment ##  
+  ggplot(Counts[[i]], aes(x=1:len2, y=Mean_Cumulative_transcript_Counts))+
+    geom_smooth(col="DARKBLUE")+xlab("Genes sorted by RNA-seq counts")+ylab("Cumulative transcript count fraction")+geom_line(aes(x=1:len2, y=seq(1/len2,1,1/len2)), col="RED")+
+    theme_classic()
+  ggsave(paste0("TranscriptionalBiasPlot_mean_",as.character(names(Counts)[i]), ".svg"), height = 8.5, width = 10)
+
   ## Uncomment this section if you want to plot all replicates on the same plot ## 
   plot_counts<-data.frame(GeneNo=1:dim(Counts[[i]])[1], Counts[[i]])
   plot_counts<-melt(plot_counts, id.vars = "GeneNo")
@@ -72,5 +76,5 @@ colnames(Comparisons)[2]<-"Sample"
 ggplot(Comparisons, aes(GeneNo, value, color=Sample))+
   geom_smooth()+theme_classic()+xlab("Genes sorted by RNA-seq counts")+ylab("Cumulative transcript count fraction")
 ggsave(paste0("TranscriptionalBiasPlot_Comparison.svg"), height = 8.5, width = 10)
-
+}
   
