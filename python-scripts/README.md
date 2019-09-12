@@ -17,7 +17,7 @@ Options:
 --seq 		input sequence for matching
 --outPath 	path to output directory
 --filter 	filter read "in" or "out" based on sequence
---mismatch			number of allowed mismatches with input sequence (use 0 for exact matches only)
+--mismatch	number of allowed mismatches with input sequence (use 0 for exact matches only)
 --readNumber	maximum number of reads desired in destination file
 ```
 Usage example:\
