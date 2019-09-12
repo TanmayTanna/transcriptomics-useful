@@ -1,6 +1,6 @@
 # Python Scripts:
 
-## SE_rmdup,py
+## SE_rmdup.py
 
 Python script to remove duplicate alignments from SAM file for SE sequencing. Dupicate alignments are defined as having the same alignment start position and same length of aligning sequence.
 
