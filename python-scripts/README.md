@@ -1,19 +1,27 @@
 # Python Scripts:
+
+## SE_rmdup,py
+
+Python script to remove duplicate alignments from SAM file for SE sequencing. Dupicate alignments are defined as having the same alignment start position and same length of aligning sequence.
+
+Usage:\
+`python SE_rmdup.py -i input.sam -o output.sam`
+
 ### filterReadsBySequenceFasta.py
 
 Python script to filter (in or out) reads in FASTA format containing complete or partial sequences
 
 Options:
 ```
--p path to input FASTA file.
--s input sequence for matching
--o path to output directory
--f filter read "in" or "out" based on sequence
--m number of allowed mismatches with input sequence (use 0 for exact matches only)
--n maximum number of reads desired in destination file
+--inFile	path to input FASTA file.
+--seq 		input sequence for matching
+--outPath 	path to output directory
+--filter 	filter read "in" or "out" based on sequence
+--mismatch			number of allowed mismatches with input sequence (use 0 for exact matches only)
+--readNumber	maximum number of reads desired in destination file
 ```
 Usage example:\
-`python filterReadsBySequenceFasta.py -p input.fasta -s filter_sequence -o output_path -f in -m 0 -n 10000`
+`python filterReadsBySequenceFasta.py --inFile input.fasta --seq filter_sequence --outPath output_path --filter in --mismatch 0 --readnumber 10000`
 
 ### makeRandomSequences.py
 
