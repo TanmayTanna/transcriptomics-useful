@@ -34,7 +34,9 @@ Usage:
 `source('download_directory/seqStatsPlotR.R')`
 3. Run the seqStatsPlotR using:\
 `seqStatsPlotR(input_path, output_path)`
-| example GC content plot | Example sequence length plot
+
+
+| example GC content plot | Example sequence length plot |
 |---|---|
 |![GC-content](images/GCcontent.png) | ![Seq-len](images/SequenceLength.png) |
 
