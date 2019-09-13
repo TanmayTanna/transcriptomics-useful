@@ -35,5 +35,5 @@ Usage:
 3. Run the seqStatsPlotR using:\
 `seqStatsPlotR(input_path, output_path)`
 
-![GC-content](images/GCcontent.png "example GC content plot") ![Seq-len](images/SequenceLength.png "Example sequence length plot")
+![GC-content](images/GCcontent.png =250x "example GC content plot" ) ![Seq-len](images/SequenceLength.png =250x "Example sequence length plot")
 
