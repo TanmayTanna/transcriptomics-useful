@@ -22,11 +22,11 @@ for(i in 1:dim(RefSeqCounts)[2]){
 
 o=order(rowMeans(RefSeqCounts), decreasing = TRUE)
 RefSeqCounts=RefSeqCounts[o,]
-test_countspaths=list.files(path = TestCountsDirectory, pattern = pattern)
+test_countspaths=list.files(path = TestCountsDirectory, pattern = pattern, full.names = TRUE)
 Counts<-list()
 for(i in 1:length(test_countspaths)){
   test_name_temp = strsplit(test_countspaths[i],".txt")[[1]][1]
-  test_name = strsplit(test_name_temp,"/")[[1]][1]
+  test_name = strsplit(test_name_temp,"/")[[1]][length(strsplit(test_name_temp,"/")[[1]])]
   Counts[[test_name]] = as.data.frame(read.table(test_countspaths[i], header = TRUE))
   rownames(Counts[[test_name]])=Counts[[test_name]][,1]
   Counts[[test_name]]=Counts[[test_name]][,-c(1:6)]
